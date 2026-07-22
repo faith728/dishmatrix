@@ -1,0 +1,10 @@
+{
+  "name": "dishmatrix-netlify",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DishMatrix — Netlify Functions backend for real Stripe payments",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0",
+    "stripe": "^16.8.0"
+  }
+}
