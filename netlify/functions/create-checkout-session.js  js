@@ -1,0 +1,43 @@
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+exports.handler = async (event) => {
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: 'Method not allowed' };
+  }
+
+  let email, plan;
+  try {
+    const parsed = JSON.parse(event.body || '{}');
+    email = parsed.email;
+    plan = parsed.plan;
+  } catch {
+    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request body.' }) };
+  }
+
+  const PRICE_IDS = {
+    home: process.env.STRIPE_PRICE_HOME,
+    business: process.env.STRIPE_PRICE_BUSINESS
+  };
+
+  if (!email || !PRICE_IDS[plan]) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'Missing email or invalid plan.' }) };
+  }
+
+  const domain = process.env.URL || process.env.DEPLOY_PRIME_URL || 'http://localhost:8888';
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      customer_email: email,
+      line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
+      metadata: { plan, email },
+      success_url: `${domain}/dishmatrix.html?checkout=success&plan=${plan}&email=${encodeURIComponent(email)}`,
+      cancel_url: `${domain}/dishmatrix.html?checkout=cancelled`
+    });
+    return { statusCode: 200, body: JSON.stringify({ url: session.url }) };
+  } catch (err) {
+    console.error(err);
+    return { statusCode: 500, body: JSON.stringify({ error: 'Could not create checkout session.' }) };
+  }
+};
