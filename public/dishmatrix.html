@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DishMatrix Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF8F3;
+    --bg-alt:#F0ECE0;
+    --card:#FFFFFF;
+    --ink:#1C2B39;
+    --ink-dim:#5B6B78;
+    --ink-faint:#8B978F99;
+    --line:#DEDACB;
+    --blue:#2E7D9E;
+    --blue-dark:#1F5A73;
+    --blue-tint:#E4EFF2;
+    --gold:#D9A428;
+    --gold-tint:#FBF1D9;
+    --coral:#C6503F;
+    --radius:10px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.55;
+  }
+  .display{font-family:'Sora', sans-serif;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  a{color:var(--blue); text-decoration:none;}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 28px;}
+
+  /* ===== HEADER ===== */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(250,248,243,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .header-inner{display:flex; align-items:center; justify-content:space-between; padding:18px 28px; max-width:1120px; margin:0 auto;}
+  .logo{font-family:'Sora', sans-serif; font-weight:700; font-size:19px; letter-spacing:-0.01em;}
+  .logo span{color:var(--blue);}
+  nav{display:flex; align-items:center; gap:30px;}
+  nav a{font-size:14.5px; font-weight:500; color:var(--ink-dim);}
+  nav a:hover{color:var(--ink);}
+  .nav-cta{
+    background:var(--blue); color:#fff !important; padding:9px 18px; border-radius:24px;
+    font-weight:600; font-size:14px; transition:background .15s ease;
+  }
+  .nav-cta:hover{background:var(--blue-dark);}
+  .plan-pill{
+    font-size:12px; font-weight:600; color:var(--blue-dark); background:var(--blue-tint);
+    padding:5px 12px; border-radius:20px; margin-left:14px;
+  }
+
+  /* ===== PRICING ===== */
+  .pricing-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; max-width:1120px; margin:0 auto;}
+  @media (max-width:860px){.pricing-grid{grid-template-columns:1fr;}}
+  .pricing-card{
+    background:var(--card); border:1.5px solid var(--line); border-radius:var(--radius);
+    padding:28px 24px; display:flex; flex-direction:column; gap:16px; position:relative;
+  }
+  .pricing-card.featured{border-color:var(--blue); box-shadow:0 20px 40px -22px rgba(46,125,158,0.35);}
+  .pricing-flag{
+    position:absolute; top:-12px; left:24px; background:var(--blue); color:#fff; font-size:11px;
+    font-weight:700; letter-spacing:0.04em; padding:4px 10px; border-radius:20px;
+  }
+  .pricing-name{font-family:'Sora', sans-serif; font-weight:700; font-size:17px;}
+  .pricing-price{font-family:'Sora', sans-serif; font-weight:800; font-size:32px;}
+  .pricing-price .per{font-size:14px; font-weight:500; color:var(--ink-dim);}
+  .pricing-tagline{font-size:13.5px; color:var(--ink-dim); margin-top:-8px;}
+  .pricing-features{list-style:none; display:flex; flex-direction:column; gap:10px; flex-grow:1;}
+  .pricing-features li{font-size:13.5px; display:flex; gap:8px; align-items:flex-start; color:var(--ink);}
+  .pricing-features li.locked{color:var(--ink-faint);}
+  .pf-icon{flex-shrink:0; margin-top:1px;}
+  .pricing-cta{
+    width:100%; padding:12px; border-radius:8px; font-weight:700; font-size:14px; cursor:pointer; border:1.5px solid var(--blue);
+    background:transparent; color:var(--blue-dark); transition:all .15s ease;
+  }
+  .pricing-card.featured .pricing-cta{background:var(--blue); color:#fff; border-color:var(--blue);}
+  .pricing-cta:hover{background:var(--blue-tint);}
+  .pricing-card.featured .pricing-cta:hover{background:var(--blue-dark);}
+  .pricing-cta.current{background:var(--bg-alt); color:var(--ink-faint); border-color:var(--line); cursor:default;}
+  .pricing-cta.current:hover{background:var(--bg-alt);}
+  .pricing-note{text-align:center; font-size:13px; color:var(--ink-faint); margin-top:28px;}
+
+  /* ===== LOCKED FEATURE CALLOUT ===== */
+  .locked-callout{
+    background:var(--card); border:1.5px dashed var(--line); border-radius:var(--radius);
+    padding:40px 28px; text-align:center; max-width:520px; margin:0 auto;
+  }
+  .locked-callout .lock-icon{font-size:26px; margin-bottom:12px;}
+  .locked-callout h3{font-family:'Sora', sans-serif; font-size:18px; font-weight:700; margin-bottom:8px;}
+  .locked-callout p{color:var(--ink-dim); font-size:14px; margin-bottom:20px;}
+  .goal-btn.locked{opacity:0.55;}
+  .goal-hint{font-size:12.5px; color:var(--ink-faint); margin-top:8px;}
+
+  /* ===== HERO ===== */
+  .hero{padding:84px 28px 90px;}
+  .hero-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:56px; align-items:center; max-width:1120px; margin:0 auto;}
+  @media (max-width:900px){.hero-grid{grid-template-columns:1fr;} .hero{padding:56px 20px 60px;}}
+  .eyebrow-pill{
+    display:inline-flex; align-items:center; gap:8px; background:var(--gold-tint); color:#8a6a10;
+    font-size:13px; font-weight:600; padding:7px 14px; border-radius:20px; margin-bottom:22px;
+  }
+  .eyebrow-pill .dot{width:6px; height:6px; border-radius:50%; background:var(--gold);}
+  h1.title{
+    font-size:clamp(34px, 5vw, 50px); font-weight:800; line-height:1.12; letter-spacing:-0.015em;
+    margin-bottom:20px;
+  }
+  h1.title .accent{color:var(--blue);}
+  .hero-sub{font-size:17px; color:var(--ink-dim); max-width:460px; margin-bottom:32px;}
+  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn-primary, .btn-secondary{
+    padding:14px 24px; border-radius:8px; font-weight:600; font-size:15px; cursor:pointer; border:none;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-primary{background:var(--blue); color:#fff;}
+  .btn-primary:hover{background:var(--blue-dark);}
+  .btn-secondary{background:transparent; color:var(--ink); border:1.5px solid var(--line);}
+  .btn-secondary:hover{border-color:var(--ink-dim);}
+
+  /* hero visual: recipe ticket card mockup */
+  .hero-visual{position:relative; display:flex; justify-content:center;}
+  .mock-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:0 20px 50px -18px rgba(28,43,57,0.25); padding:22px; width:100%; max-width:340px;
+    transform:rotate(-2deg);
+  }
+  .mock-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+  .mock-brand{font-size:11px; font-weight:600; letter-spacing:0.08em; color:var(--ink-faint); text-transform:uppercase;}
+  .mock-badge{background:var(--blue-tint); color:var(--blue-dark); font-size:10.5px; font-weight:600; padding:3px 9px; border-radius:20px;}
+  .mock-title{font-family:'Sora', sans-serif; font-weight:700; font-size:16px; margin-bottom:14px;}
+  .mock-row{display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-top:1px solid var(--bg-alt);}
+  .mock-row.old span{color:var(--coral); text-decoration:line-through;}
+  .mock-row.new span{color:#2C7A4B; font-weight:600;}
+  .mock-foot{margin-top:12px; font-size:11px; color:var(--ink-faint);}
+
+  /* ===== SECTION HEADERS ===== */
+  .section{padding:80px 28px;}
+  .section-head{max-width:560px; margin-bottom:48px;}
+  .section-head.center{margin:0 auto 48px; text-align:center;}
+  .eyebrow{font-size:13px; font-weight:700; letter-spacing:0.08em; color:var(--blue); text-transform:uppercase; margin-bottom:10px;}
+  .section-head h2{font-family:'Sora', sans-serif; font-size:30px; font-weight:700; letter-spacing:-0.01em;}
+  .section-head p{color:var(--ink-dim); margin-top:10px; font-size:15.5px;}
+
+  /* ===== MODULE CARDS ===== */
+  .modules{display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; max-width:1120px; margin:0 auto;}
+  @media (max-width:860px){.modules{grid-template-columns:1fr;}}
+  .module-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:26px; display:flex; flex-direction:column; gap:14px; transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .module-card.live:hover{transform:translateY(-3px); box-shadow:0 16px 30px -16px rgba(28,43,57,0.2);}
+  .module-card.pending{background:var(--bg-alt); border-color:var(--line);}
+  .module-top{display:flex; align-items:center; justify-content:space-between;}
+  .module-num{font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink-faint);}
+  .module-status{font-size:11px; font-weight:600; padding:4px 10px; border-radius:20px; letter-spacing:0.03em;}
+  .module-status.online{background:var(--blue-tint); color:var(--blue-dark);}
+  .module-status.dev{background:var(--line); color:var(--ink-dim);}
+  .module-name{font-family:'Sora', sans-serif; font-weight:700; font-size:18px;}
+  .module-desc{color:var(--ink-dim); font-size:14.5px; flex-grow:1;}
+  .module-target{font-size:12px; font-weight:600; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.04em; border-top:1px solid var(--line); padding-top:12px;}
+  .module-cta{
+    font-size:14px; font-weight:600; color:var(--blue); background:var(--blue-tint); border:none;
+    text-align:center; padding:11px; border-radius:8px; cursor:pointer; transition:background .15s ease;
+  }
+  .module-cta:hover{background:#d5e6ea;}
+  .module-cta[disabled]{color:var(--ink-faint); background:var(--line); cursor:not-allowed;}
+  .module-cta[disabled]:hover{background:var(--line);}
+
+  /* ===== DEMO SECTION ===== */
+  .demo{background:var(--bg-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .demo-grid{display:grid; grid-template-columns:1fr 1fr; gap:36px; max-width:1120px; margin:0 auto; align-items:start;}
+  @media (max-width:900px){.demo-grid{grid-template-columns:1fr;}}
+
+  .field-group{margin-bottom:20px;}
+  .field-label{font-size:12.5px; font-weight:600; letter-spacing:0.03em; color:var(--ink-dim); margin-bottom:8px; display:block; text-transform:uppercase;}
+  textarea, select, input[type=number]{
+    width:100%; background:var(--card); border:1.5px solid var(--line); color:var(--ink);
+    font-family:'Inter', sans-serif; font-size:14.5px; padding:12px; border-radius:8px; resize:vertical;
+  }
+  textarea:focus, select:focus, input:focus{outline:none; border-color:var(--blue);}
+  textarea{min-height:150px;}
+
+  .goal-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .goal-btn{
+    flex:1; min-width:120px; font-size:13px; font-weight:600; padding:11px 10px; border:1.5px solid var(--line);
+    background:var(--card); color:var(--ink-dim); cursor:pointer; border-radius:8px; transition:all .15s ease; text-align:center;
+  }
+  .goal-btn.active{border-color:var(--blue); color:var(--blue-dark); background:var(--blue-tint);}
+  .goal-btn:hover:not(.active){border-color:var(--ink-dim); color:var(--ink);}
+
+  .run-btn{
+    width:100%; font-size:15px; font-weight:700; padding:15px; background:var(--blue); color:#fff;
+    border:none; border-radius:8px; cursor:pointer; transition:background .15s ease;
+  }
+  .run-btn:hover{background:var(--blue-dark);}
+  .run-btn:disabled{background:var(--line); color:var(--ink-faint); cursor:not-allowed;}
+  .error-msg{color:var(--coral); font-size:13px; margin-top:10px; font-weight:500;}
+
+  /* ticket output */
+  .ticket-wrap{min-height:340px; display:flex; align-items:flex-start; justify-content:center;}
+  .ticket-placeholder{
+    color:var(--ink-faint); font-size:14px; text-align:center; padding:60px 24px;
+    border:1.5px dashed var(--line); border-radius:var(--radius); width:100%; background:var(--card);
+  }
+  .ticket{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius); width:100%; max-width:400px;
+    margin:0 auto; padding:24px 22px; box-shadow:0 16px 36px -18px rgba(28,43,57,0.25);
+  }
+  .ticket-head{border-bottom:1px solid var(--bg-alt); padding-bottom:14px; margin-bottom:14px;}
+  .ticket-head .tk-brand{font-size:11px; font-weight:600; letter-spacing:0.08em; color:var(--ink-faint); text-transform:uppercase;}
+  .ticket-head .tk-title{font-family:'Sora', sans-serif; font-size:18px; font-weight:700; margin-top:4px;}
+  .ticket-meta{display:flex; justify-content:space-between; font-size:12px; color:var(--ink-faint); margin-bottom:14px;}
+  .ticket-note{font-size:13px; color:var(--ink); background:var(--gold-tint); padding:10px 12px; margin-bottom:14px; border-radius:8px;}
+  .ticket-section-title{font-size:11.5px; font-weight:700; letter-spacing:0.06em; color:var(--ink-dim); margin:14px 0 6px; text-transform:uppercase;}
+  .ticket-ing{display:flex; justify-content:space-between; gap:8px; padding:4px 0; font-size:13.5px;}
+  .ticket-ing .old{color:var(--coral); text-decoration:line-through;}
+  .ticket-ing .new{color:#2C7A4B; font-weight:600;}
+  .ticket-step{font-size:13.5px; padding:6px 0; border-top:1px solid var(--bg-alt);}
+  .ticket-step:first-of-type{border-top:none;}
+  .ticket-foot{text-align:center; margin-top:16px; font-size:11px; color:var(--ink-faint);}
+
+  footer{padding:40px 28px; text-align:center; font-size:13px; color:var(--ink-faint); border-top:1px solid var(--line);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">Dish<span>Matrix</span><span class="plan-pill" id="planPill">Starter plan</span></div>
+    <nav>
+      <a href="#modules">Modules</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#demo">Recipe Engine</a>
+      <a href="#demo2">Pricing Engine</a>
+      <a href="#demo3">Price Optimizer</a>
+      <a class="nav-cta" href="#pricing">Upgrade</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow-pill"><span class="dot"></span> All 3 modules are live</div>
+      <h1 class="title">Cooking, pricing, and shopping &mdash;<br>rebuilt as <span class="accent">one platform</span>.</h1>
+      <p class="hero-sub">DishMatrix is three focused tools sharing the same core: one for home cooks, one for small food businesses, one for everyday shoppers.</p>
+      <div class="hero-ctas">
+        <button class="btn-primary" onclick="document.getElementById('demo').scrollIntoView()">Try the Recipe Engine</button>
+        <button class="btn-secondary" onclick="document.getElementById('modules').scrollIntoView()">See all modules</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="mock-card">
+        <div class="mock-head">
+          <span class="mock-brand">DishMatrix</span>
+          <span class="mock-badge">Rewritten</span>
+        </div>
+        <div class="mock-title">Spaghetti Carbonara &mdash; Vegan</div>
+        <div class="mock-row old"><span>200g pancetta, diced</span></div>
+        <div class="mock-row new"><span>200g smoked tempeh, diced</span></div>
+        <div class="mock-row old"><span>4 eggs</span></div>
+        <div class="mock-row new"><span>120g silken tofu + turmeric</span></div>
+        <div class="mock-foot">Swapped 3 ingredients &middot; ready in 20 min</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="modules">
+  <div class="section-head center">
+    <div class="eyebrow">Platform modules</div>
+    <h2>One stack, three entry points</h2>
+    <p>Each module is built for a different person in the food chain &mdash; the cook, the seller, the shopper.</p>
+  </div>
+  <div class="modules">
+    <div class="module-card live">
+      <div class="module-top"><span class="module-num">01</span><span class="module-status online">Live</span></div>
+      <div class="module-name">Recipe Rewriter Engine</div>
+      <div class="module-desc">Paste any recipe and a goal &mdash; dietary swap, healthier version, or scale-and-substitute &mdash; and it rewrites the recipe line by line.</div>
+      <div class="module-target">Targets home cooks &middot; Starter plan and up</div>
+      <button class="module-cta" onclick="document.getElementById('demo').scrollIntoView()">Try the engine &rarr;</button>
+    </div>
+    <div class="module-card live">
+      <div class="module-top"><span class="module-num">02</span><span class="module-status online">Live</span></div>
+      <div class="module-name">Micro-Caterer Pricing Engine</div>
+      <div class="module-desc">Turns ingredient cost, labor, and portioning into a defensible per-plate price for small catering operations.</div>
+      <div class="module-target">Targets food businesses &middot; Business plan only</div>
+      <button class="module-cta" onclick="document.getElementById('demo2').scrollIntoView()">Try the engine &rarr;</button>
+    </div>
+    <div class="module-card live">
+      <div class="module-top"><span class="module-num">03</span><span class="module-status online">Live</span></div>
+      <div class="module-name">Grocery Price Optimizer</div>
+      <div class="module-desc">Compares a shopping list against your budget and swaps in cheaper equivalents without changing the meal plan.</div>
+      <div class="module-target">Targets everyday shoppers &middot; Home plan and up</div>
+      <button class="module-cta" onclick="document.getElementById('demo3').scrollIntoView()">Try the engine &rarr;</button>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="pricing">
+  <div class="section-head center">
+    <div class="eyebrow">Pricing</div>
+    <h2>Pick the plan that matches what you need</h2>
+    <p>Every plan includes the Recipe Rewriter Engine &mdash; the higher tiers unlock the other two modules and remove usage limits.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="pricing-card" id="cardStarter">
+      <div class="pricing-name">Starter</div>
+      <div class="pricing-price">$0<span class="per"> /month</span></div>
+      <div class="pricing-tagline">Try the core engine before you commit.</div>
+      <ul class="pricing-features">
+        <li><span class="pf-icon">&#10003;</span> Recipe Rewriter &mdash; Dietary Need goal only</li>
+        <li><span class="pf-icon">&#10003;</span> 3 recipe rewrites per session</li>
+        <li class="locked"><span class="pf-icon">&#128274;</span> Healthier &amp; Scale/Substitute goals</li>
+        <li class="locked"><span class="pf-icon">&#128274;</span> Grocery Price Optimizer</li>
+        <li class="locked"><span class="pf-icon">&#128274;</span> Micro-Caterer Pricing Engine</li>
+      </ul>
+      <button class="pricing-cta" id="btnStarter" onclick="handleStarterClick()">Current plan</button>
+    </div>
+    <div class="pricing-card featured" id="cardHome">
+      <div class="pricing-flag">Most popular</div>
+      <div class="pricing-name">Home</div>
+      <div class="pricing-price">$7<span class="per"> /month</span></div>
+      <div class="pricing-tagline">For anyone cooking and shopping regularly.</div>
+      <ul class="pricing-features">
+        <li><span class="pf-icon">&#10003;</span> Recipe Rewriter &mdash; all goals, unlimited</li>
+        <li><span class="pf-icon">&#10003;</span> Grocery Price Optimizer, unlimited</li>
+        <li><span class="pf-icon">&#10003;</span> Unlimited recipe rewrites</li>
+        <li class="locked"><span class="pf-icon">&#128274;</span> Micro-Caterer Pricing Engine</li>
+      </ul>
+      <button class="pricing-cta" id="btnHome" onclick="startCheckout('home')">Upgrade to Home</button>
+    </div>
+    <div class="pricing-card" id="cardBusiness">
+      <div class="pricing-name">Business</div>
+      <div class="pricing-price">$19<span class="per"> /month</span></div>
+      <div class="pricing-tagline">For catering and small food businesses.</div>
+      <ul class="pricing-features">
+        <li><span class="pf-icon">&#10003;</span> Everything in Home</li>
+        <li><span class="pf-icon">&#10003;</span> Micro-Caterer Pricing Engine, unlimited orders</li>
+        <li><span class="pf-icon">&#10003;</span> Priority engine access</li>
+      </ul>
+      <button class="pricing-cta" id="btnBusiness" onclick="startCheckout('business')">Upgrade to Business</button>
+    </div>
+  </div>
+  <p class="pricing-note">Already subscribed on another browser? <input type="email" id="syncEmailInput" placeholder="you@email.com" style="width:200px; display:inline-block; padding:6px 10px; font-size:13px; border-radius:6px; border:1px solid var(--line);"> <button class="pricing-cta" style="display:inline-block; width:auto; padding:6px 14px; font-size:13px;" onclick="syncPlanFromInput()">Sync plan</button></p>
+  <p class="pricing-note">Prices are charged securely through Stripe. Manage or cancel anytime from the "Current plan" button above.</p>
+</section>
+
+<section class="section demo" id="demo">
+  <div class="section-head center">
+    <div class="eyebrow">Module 01 &middot; Live demo</div>
+    <h2>Recipe Rewriter Engine</h2>
+    <p>Paste a recipe, pick a goal, and get back a rewritten version with every change marked.</p>
+  </div>
+
+  <div class="demo-grid">
+    <div>
+      <div class="field-group">
+        <label class="field-label">1. Paste your recipe</label>
+        <textarea id="recipeInput" placeholder="e.g.&#10;Spaghetti Carbonara (serves 4)&#10;- 400g spaghetti&#10;- 200g pancetta, diced&#10;- 4 eggs&#10;- 100g pecorino, grated&#10;- black pepper&#10;&#10;1. Boil pasta until al dente...&#10;2. Fry pancetta until crisp...&#10;3. Off heat, toss pasta with egg + cheese mixture...&#10;4. Add pancetta, plenty of black pepper. Serve."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">2. Pick a goal</label>
+        <div class="goal-row" id="goalRow">
+          <button class="goal-btn active" data-goal="dietary">Dietary need</button>
+          <button class="goal-btn" data-goal="healthier">Healthier version</button>
+          <button class="goal-btn" data-goal="scale">Scale / substitute</button>
+        </div>
+        <div class="goal-hint" id="goalHint"></div>
+      </div>
+
+      <div class="field-group" id="dietaryOptions">
+        <label class="field-label">3. Dietary target</label>
+        <select id="dietarySelect">
+          <option value="vegan">Vegan</option>
+          <option value="vegetarian">Vegetarian</option>
+          <option value="gluten-free">Gluten-Free</option>
+          <option value="dairy-free">Dairy-Free</option>
+          <option value="keto">Keto / Low-Carb</option>
+          <option value="nut-free">Nut-Free</option>
+        </select>
+      </div>
+
+      <div class="field-group" id="healthierOptions" style="display:none;">
+        <label class="field-label">3. Health target</label>
+        <select id="healthierSelect">
+          <option value="lower calorie">Lower Calorie</option>
+          <option value="lower sugar">Lower Sugar</option>
+          <option value="lower sodium">Lower Sodium</option>
+          <option value="higher protein">Higher Protein</option>
+          <option value="lower saturated fat">Lower Saturated Fat</option>
+        </select>
+      </div>
+
+      <div class="field-group" id="scaleOptions" style="display:none;">
+        <label class="field-label">3. New serving size</label>
+        <input type="number" id="servingsInput" min="1" max="50" value="8" style="margin-bottom:12px;">
+        <label class="field-label">Optional &mdash; ingredients you already have</label>
+        <textarea id="haveInput" style="min-height:70px;" placeholder="e.g. I have chickpeas and coconut milk instead of pancetta and cream"></textarea>
+      </div>
+
+      <button class="run-btn" id="runBtn" onclick="rewriteRecipe()">Rewrite recipe</button>
+      <div class="error-msg" id="errorMsg" style="display:none;"></div>
+    </div>
+
+    <div class="ticket-wrap" id="ticketWrap">
+      <div class="ticket-placeholder" id="ticketPlaceholder">
+        Paste a recipe, choose a goal, and the rewritten version will appear here.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="demo2">
+  <div class="section-head center">
+    <div class="eyebrow">Module 02 &middot; Live demo</div>
+    <h2>Micro-Caterer Pricing Engine</h2>
+    <p>Enter your real costs for one plate and an order size &mdash; get back a per-plate price and the full breakdown.</p>
+  </div>
+
+  <div class="demo-grid">
+    <div id="module2FormWrap">
+      <div class="field-group">
+        <label class="field-label">Dish name (optional)</label>
+        <input type="text" id="dishName" placeholder="e.g. Braised short rib plate">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Ingredient cost per plate ($)</label>
+        <input type="number" id="ingredientCost" min="0" step="0.01" value="6.50">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Labor time per plate (minutes)</label>
+        <input type="number" id="laborMinutes" min="0" value="12">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Your labor rate ($ / hour)</label>
+        <input type="number" id="laborRate" min="0" step="0.5" value="22">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Packaging &amp; overhead per plate ($)</label>
+        <input type="number" id="overheadCost" min="0" step="0.01" value="1.25">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Target profit margin (%)</label>
+        <input type="number" id="marginPct" min="0" max="90" value="30">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Number of plates in this order</label>
+        <input type="number" id="plateCount" min="1" value="20">
+      </div>
+
+      <button class="run-btn" onclick="calculatePricing()">Calculate price</button>
+      <div class="error-msg" id="pricingError" style="display:none;"></div>
+    </div>
+    <div id="module2LockWrap" style="display:none;">
+      <div class="locked-callout">
+        <div class="lock-icon">&#128274;</div>
+        <h3>Business plan required</h3>
+        <p>The Micro-Caterer Pricing Engine is built for food businesses running real orders. Upgrade to Business to unlock it.</p>
+        <button class="pricing-cta" style="background:var(--blue); color:#fff; border-color:var(--blue);" onclick="startCheckout('business')">Upgrade to Business &mdash; $19/mo</button>
+      </div>
+    </div>
+
+    <div class="ticket-wrap" id="pricingWrap">
+      <div class="ticket-placeholder">
+        Fill in your costs and margin &mdash; the per-plate price and order total will appear here.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section demo" id="demo3">
+  <div class="section-head center">
+    <div class="eyebrow">Module 03 &middot; Live demo</div>
+    <h2>Grocery Price Optimizer</h2>
+    <p>Paste your shopping list and a budget goal &mdash; get back cheaper equivalents without changing the meal plan.</p>
+  </div>
+
+  <div class="demo-grid">
+    <div id="module3FormWrap">
+      <div class="field-group">
+        <label class="field-label">1. Paste your shopping list</label>
+        <textarea id="groceryInput" placeholder="e.g.&#10;2 lb chicken breast&#10;1 dozen eggs&#10;bag of spinach&#10;parmesan cheese&#10;olive oil&#10;canned tomatoes x3&#10;greek yogurt"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">2. Weekly grocery budget ($, optional)</label>
+        <input type="number" id="budgetInput" min="0" step="1" placeholder="e.g. 60">
+      </div>
+      <button class="run-btn" id="optimizeBtn" onclick="optimizeGroceries()">Optimize list</button>
+      <div class="error-msg" id="groceryError" style="display:none;"></div>
+    </div>
+    <div id="module3LockWrap" style="display:none;">
+      <div class="locked-callout">
+        <div class="lock-icon">&#128274;</div>
+        <h3>Home plan or higher required</h3>
+        <p>The Grocery Price Optimizer is a Home-plan feature. Upgrade to unlock unlimited use, or go Business for everything.</p>
+        <button class="pricing-cta" style="background:var(--blue); color:#fff; border-color:var(--blue);" onclick="startCheckout('home')">Upgrade to Home &mdash; $7/mo</button>
+      </div>
+    </div>
+
+    <div class="ticket-wrap" id="groceryWrap">
+      <div class="ticket-placeholder">
+        Paste your list and the optimized version, with substitutions, will appear here.
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>DishMatrix Platform &mdash; Module 01&ndash;03 demo environment</footer>
+
+<script>
+  // ===== TIER / PLAN STATE =====
+  const TIER_RANK = { starter: 0, home: 1, business: 2 };
+  let currentTier = 'starter';
+  let starterRewritesUsed = 0;
+  const STARTER_REWRITE_LIMIT = 3;
+
+  function getStoredEmail(){
+    return localStorage.getItem('dishmatrix_email') || '';
+  }
+
+  function askForEmail(){
+    const existing = getStoredEmail();
+    const email = prompt('Enter your email to continue:', existing);
+    if (email && email.includes('@')){
+      localStorage.setItem('dishmatrix_email', email);
+      return email;
+    }
+    return null;
+  }
+
+  async function startCheckout(plan){
+    const email = getStoredEmail() || askForEmail();
+    if (!email) return;
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, plan })
+      });
+      const data = await res.json();
+      if (data.url){
+        window.location.href = data.url;
+      } else {
+        alert(data.error || 'Could not start checkout.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Could not reach the server. Is the backend running?');
+    }
+  }
+
+  async function manageBilling(){
+    const email = getStoredEmail() || askForEmail();
+    if (!email) return;
+    try {
+      const res = await fetch('/api/create-portal-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (data.url){
+        window.location.href = data.url;
+      } else {
+        alert(data.error || 'No active subscription found for that email.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Could not reach the server. Is the backend running?');
+    }
+  }
+
+  function handleStarterClick(){
+    if (currentTier === 'starter') return;
+    manageBilling();
+  }
+
+  async function syncPlanFromServer(email){
+    if (!email) return;
+    try {
+      const res = await fetch(`/api/plan?email=${encodeURIComponent(email)}`);
+      const data = await res.json();
+      currentTier = data.plan || 'starter';
+      applyTierUI();
+    } catch (err) {
+      console.error('Could not sync plan:', err);
+    }
+  }
+
+  function syncPlanFromInput(){
+    const input = document.getElementById('syncEmailInput');
+    const email = input.value.trim();
+    if (!email || !email.includes('@')){
+      alert('Enter a valid email.');
+      return;
+    }
+    localStorage.setItem('dishmatrix_email', email);
+    syncPlanFromServer(email);
+  }
+
+  function applyTierUI(){
+    const planNames = { starter: 'Starter plan', home: 'Home plan', business: 'Business plan' };
+    document.getElementById('planPill').textContent = planNames[currentTier];
+
+    // pricing card buttons
+    const configs = [
+      { tier: 'starter', btnId: 'btnStarter', label: 'Current plan', upgradeLabel: null },
+      { tier: 'home', btnId: 'btnHome', label: 'Current plan', upgradeLabel: 'Upgrade to Home' },
+      { tier: 'business', btnId: 'btnBusiness', label: 'Current plan', upgradeLabel: 'Upgrade to Business' }
+    ];
+    configs.forEach(c => {
+      const btn = document.getElementById(c.btnId);
+      if (c.tier === currentTier){
+        btn.textContent = 'Current plan';
+        btn.classList.add('current');
+      } else {
+        btn.textContent = c.tier === 'starter' ? 'Downgrade to Starter' : c.upgradeLabel;
+        btn.classList.remove('current');
+      }
+    });
+
+    // goal hint + lock styling on module 1
+    const canUseAdvancedGoals = TIER_RANK[currentTier] >= TIER_RANK.home;
+    document.querySelectorAll('.goal-btn').forEach(b => {
+      const needsUpgrade = (b.dataset.goal === 'healthier' || b.dataset.goal === 'scale') && !canUseAdvancedGoals;
+      b.classList.toggle('locked', needsUpgrade);
+    });
+    const hint = document.getElementById('goalHint');
+    if (!canUseAdvancedGoals){
+      const remaining = Math.max(STARTER_REWRITE_LIMIT - starterRewritesUsed, 0);
+      hint.textContent = `Starter plan: Dietary Need only, ${remaining} rewrite${remaining === 1 ? '' : 's'} left this session. Upgrade to Home to unlock all goals and unlimited use.`;
+    } else {
+      hint.textContent = '';
+    }
+
+    // module 2 gate (business only)
+    const module2Unlocked = currentTier === 'business';
+    document.getElementById('module2FormWrap').style.display = module2Unlocked ? 'block' : 'none';
+    document.getElementById('module2LockWrap').style.display = module2Unlocked ? 'none' : 'block';
+
+    // module 3 gate (home or business)
+    const module3Unlocked = TIER_RANK[currentTier] >= TIER_RANK.home;
+    document.getElementById('module3FormWrap').style.display = module3Unlocked ? 'block' : 'none';
+    document.getElementById('module3LockWrap').style.display = module3Unlocked ? 'none' : 'block';
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('checkout') === 'success'){
+      const email = params.get('email');
+      if (email) localStorage.setItem('dishmatrix_email', email);
+      applyTierUI();
+      syncPlanFromServer(email || getStoredEmail());
+      alert('Payment received — your plan is now active.');
+    } else if (params.get('checkout') === 'cancelled'){
+      applyTierUI();
+    } else {
+      applyTierUI();
+      const stored = getStoredEmail();
+      if (stored) syncPlanFromServer(stored);
+    }
+    const syncInput = document.getElementById('syncEmailInput');
+    if (syncInput && getStoredEmail()) syncInput.value = getStoredEmail();
+  });
+
+  let currentGoal = 'dietary';
+  document.getElementById('goalRow').addEventListener('click', (e) => {
+    const btn = e.target.closest('.goal-btn');
+    if (!btn) return;
+    document.querySelectorAll('.goal-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentGoal = btn.dataset.goal;
+    document.getElementById('dietaryOptions').style.display = currentGoal === 'dietary' ? 'block' : 'none';
+    document.getElementById('healthierOptions').style.display = currentGoal === 'healthier' ? 'block' : 'none';
+    document.getElementById('scaleOptions').style.display = currentGoal === 'scale' ? 'block' : 'none';
+    applyTierUI();
+  });
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.innerText = str;
+    return d.innerHTML;
+  }
+
+  async function rewriteRecipe(){
+    const recipeText = document.getElementById('recipeInput').value.trim();
+    const errorMsg = document.getElementById('errorMsg');
+    const runBtn = document.getElementById('runBtn');
+    errorMsg.style.display = 'none';
+
+    if (!recipeText){
+      errorMsg.textContent = 'Please paste a recipe first.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    const canUseAdvancedGoals = TIER_RANK[currentTier] >= TIER_RANK.home;
+    if (!canUseAdvancedGoals && currentGoal !== 'dietary'){
+      errorMsg.innerHTML = 'The Healthier and Scale/Substitute goals need the Home plan. <a href="#pricing" onclick="document.getElementById(\'pricing\').scrollIntoView({behavior:\'smooth\'})">Upgrade to Home</a>.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+    if (!canUseAdvancedGoals && starterRewritesUsed >= STARTER_REWRITE_LIMIT){
+      errorMsg.innerHTML = 'You\'ve used all 3 Starter rewrites this session. <a href="#pricing" onclick="document.getElementById(\'pricing\').scrollIntoView({behavior:\'smooth\'})">Upgrade to Home</a> for unlimited rewrites.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    let goalInstruction = '';
+    if (currentGoal === 'dietary'){
+      goalInstruction = `Rewrite this recipe to be ${document.getElementById('dietarySelect').value}. Substitute any ingredient that violates that restriction.`;
+    } else if (currentGoal === 'healthier'){
+      goalInstruction = `Rewrite this recipe to achieve: ${document.getElementById('healthierSelect').value}. Adjust ingredients and/or method accordingly.`;
+    } else {
+      const servings = document.getElementById('servingsInput').value || '4';
+      const have = document.getElementById('haveInput').value.trim();
+      goalInstruction = `Rescale this recipe to ${servings} servings.` + (have ? ` Also substitute ingredients using what's on hand: ${have}. Only substitute what's necessary; keep everything else the same.` : '');
+    }
+
+    runBtn.disabled = true;
+    runBtn.textContent = 'Rewriting...';
+    document.getElementById('ticketWrap').innerHTML = '<div class="ticket-placeholder">Rewriting your recipe&hellip;</div>';
+
+    const systemPrompt = `You are the Recipe Rewriter Engine inside a kitchen-tools platform. You will receive a recipe and an instruction. Rewrite the recipe accordingly and respond with ONLY raw JSON (no markdown fences, no prose before or after) matching exactly this schema:
+{
+  "title": "string, recipe name",
+  "servings": "string, e.g. 'Serves 4'",
+  "changeSummary": "one short sentence describing what changed and why",
+  "ingredients": [
+    {"original": "string or null if unchanged, the original ingredient line", "updated": "string, the final ingredient line to use now", "changed": true or false}
+  ],
+  "steps": ["string, one rewritten instruction step per array item"]
+}
+Keep ingredient lines concise (e.g. "2 cups almond milk"). Only mark changed:true for ingredients that were actually substituted or whose quantity changed. Keep the same number of steps as reasonable for the dish. Output nothing but the JSON object.`;
+
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1000,
+          system: systemPrompt,
+          messages: [
+            { role: "user", content: `RECIPE:\n${recipeText}\n\nINSTRUCTION:\n${goalInstruction}` }
+          ]
+        })
+      });
+
+      const data = await response.json();
+      const rawText = (data.content || []).map(b => b.text || '').join('\n').trim();
+      const cleaned = rawText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+      const parsed = JSON.parse(cleaned);
+      renderTicket(parsed);
+      if (!canUseAdvancedGoals){
+        starterRewritesUsed++;
+        applyTierUI();
+      }
+    } catch (err) {
+      console.error(err);
+      document.getElementById('ticketWrap').innerHTML = '<div class="ticket-placeholder">Paste a recipe, choose a goal, and the rewritten version will appear here.</div>';
+      errorMsg.textContent = 'Could not rewrite recipe. Please try again.';
+      errorMsg.style.display = 'block';
+    } finally {
+      runBtn.disabled = false;
+      runBtn.textContent = 'Rewrite recipe';
+    }
+  }
+
+  function renderTicket(data){
+    const ingredientsHtml = (data.ingredients || []).map(ing => {
+      if (ing.changed && ing.original){
+        return `<div class="ticket-ing"><span class="old">${escapeHtml(ing.original)}</span></div><div class="ticket-ing"><span class="new">${escapeHtml(ing.updated)}</span></div>`;
+      }
+      return `<div class="ticket-ing"><span>${escapeHtml(ing.updated)}</span></div>`;
+    }).join('');
+
+    const stepsHtml = (data.steps || []).map((s, i) => `<div class="ticket-step">${i+1}. ${escapeHtml(s)}</div>`).join('');
+
+    const html = `
+      <div class="ticket">
+        <div class="ticket-head">
+          <div class="tk-brand">DishMatrix &middot; Module 01</div>
+          <div class="tk-title">${escapeHtml(data.title || 'Rewritten Recipe')}</div>
+        </div>
+        <div class="ticket-meta">
+          <span>${escapeHtml(data.servings || '')}</span>
+          <span>${new Date().toLocaleDateString()}</span>
+        </div>
+        ${data.changeSummary ? `<div class="ticket-note">${escapeHtml(data.changeSummary)}</div>` : ''}
+        <div class="ticket-section-title">Ingredients</div>
+        ${ingredientsHtml}
+        <div class="ticket-section-title">Method</div>
+        ${stepsHtml}
+        <div class="ticket-foot">End of rewritten recipe</div>
+      </div>
+    `;
+    document.getElementById('ticketWrap').innerHTML = html;
+  }
+
+  // ===== MODULE 02: Micro-Caterer Pricing Engine =====
+  function calculatePricing(){
+    const errorMsg = document.getElementById('pricingError');
+    errorMsg.style.display = 'none';
+
+    const dishName = document.getElementById('dishName').value.trim() || 'Untitled dish';
+    const ingredientCost = parseFloat(document.getElementById('ingredientCost').value) || 0;
+    const laborMinutes = parseFloat(document.getElementById('laborMinutes').value) || 0;
+    const laborRate = parseFloat(document.getElementById('laborRate').value) || 0;
+    const overheadCost = parseFloat(document.getElementById('overheadCost').value) || 0;
+    const marginPct = parseFloat(document.getElementById('marginPct').value) || 0;
+    const plateCount = parseInt(document.getElementById('plateCount').value) || 1;
+
+    if (ingredientCost <= 0){
+      errorMsg.textContent = 'Enter an ingredient cost greater than $0.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    const laborCost = (laborMinutes / 60) * laborRate;
+    const baseCost = ingredientCost + laborCost + overheadCost;
+    const marginMultiplier = 1 / (1 - Math.min(marginPct, 90) / 100);
+    const pricePerPlate = baseCost * marginMultiplier;
+    const profitPerPlate = pricePerPlate - baseCost;
+    const orderTotal = pricePerPlate * plateCount;
+    const orderProfit = profitPerPlate * plateCount;
+
+    const fmt = (n) => '$' + n.toFixed(2);
+
+    const html = `
+      <div class="ticket">
+        <div class="ticket-head">
+          <div class="tk-brand">DishMatrix &middot; Module 02</div>
+          <div class="tk-title">${escapeHtml(dishName)}</div>
+        </div>
+        <div class="ticket-meta">
+          <span>${plateCount} plates</span>
+          <span>${new Date().toLocaleDateString()}</span>
+        </div>
+        <div class="ticket-note">Suggested price: ${fmt(pricePerPlate)} per plate at a ${marginPct}% margin.</div>
+        <div class="ticket-section-title">Cost breakdown (per plate)</div>
+        <div class="ticket-ing"><span>Ingredients</span><span>${fmt(ingredientCost)}</span></div>
+        <div class="ticket-ing"><span>Labor (${laborMinutes} min @ ${fmt(laborRate)}/hr)</span><span>${fmt(laborCost)}</span></div>
+        <div class="ticket-ing"><span>Packaging &amp; overhead</span><span>${fmt(overheadCost)}</span></div>
+        <div class="ticket-ing"><span class="new">Break-even cost</span><span class="new">${fmt(baseCost)}</span></div>
+        <div class="ticket-ing"><span class="new">Profit per plate</span><span class="new">${fmt(profitPerPlate)}</span></div>
+        <div class="ticket-section-title">This order</div>
+        <div class="ticket-step">Price per plate: ${fmt(pricePerPlate)}</div>
+        <div class="ticket-step">Order total (${plateCount} plates): ${fmt(orderTotal)}</div>
+        <div class="ticket-step">Total profit: ${fmt(orderProfit)}</div>
+        <div class="ticket-foot">Estimate only &mdash; confirm your actual ingredient and labor costs</div>
+      </div>
+    `;
+    document.getElementById('pricingWrap').innerHTML = html;
+  }
+
+  // ===== MODULE 03: Grocery Price Optimizer =====
+  async function optimizeGroceries(){
+    const listText = document.getElementById('groceryInput').value.trim();
+    const budget = document.getElementById('budgetInput').value;
+    const errorMsg = document.getElementById('groceryError');
+    const optimizeBtn = document.getElementById('optimizeBtn');
+    errorMsg.style.display = 'none';
+
+    if (!listText){
+      errorMsg.textContent = 'Please paste a shopping list first.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    optimizeBtn.disabled = true;
+    optimizeBtn.textContent = 'Optimizing...';
+    document.getElementById('groceryWrap').innerHTML = '<div class="ticket-placeholder">Optimizing your list&hellip;</div>';
+
+    const systemPrompt = `You are the Grocery Price Optimizer inside a kitchen-tools platform. You will receive a shopping list and optionally a budget. Suggest cheaper equivalent items for ones that are commonly overpriced or have a cheaper substitute (e.g. store brand, different cut, frozen vs fresh, bulk size), without changing what meals the list supports. Respond with ONLY raw JSON (no markdown fences, no prose before or after) matching exactly this schema:
+{
+  "listName": "short string, e.g. 'Weekly Grocery List'",
+  "changeSummary": "one short sentence describing the overall savings strategy",
+  "estimatedSavingsPct": "string, e.g. '18%'",
+  "items": [
+    {"original": "string or null if unchanged, the original item line", "updated": "string, the final item to buy instead", "changed": true or false}
+  ]
+}
+Only mark changed:true for items where you're suggesting a real substitute. Leave items unchanged if there's no sensible cheaper swap. Output nothing but the JSON object.`;
+
+    const userContent = `SHOPPING LIST:\n${listText}` + (budget ? `\n\nWEEKLY BUDGET: $${budget}` : '');
+
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1000,
+          system: systemPrompt,
+          messages: [
+            { role: "user", content: userContent }
+          ]
+        })
+      });
+
+      const data = await response.json();
+      const rawText = (data.content || []).map(b => b.text || '').join('\n').trim();
+      const cleaned = rawText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+      const parsed = JSON.parse(cleaned);
+      renderGroceryTicket(parsed);
+    } catch (err) {
+      console.error(err);
+      document.getElementById('groceryWrap').innerHTML = '<div class="ticket-placeholder">Paste your list and the optimized version, with substitutions, will appear here.</div>';
+      errorMsg.textContent = 'Could not optimize list. Please try again.';
+      errorMsg.style.display = 'block';
+    } finally {
+      optimizeBtn.disabled = false;
+      optimizeBtn.textContent = 'Optimize list';
+    }
+  }
+
+  function renderGroceryTicket(data){
+    const itemsHtml = (data.items || []).map(item => {
+      if (item.changed && item.original){
+        return `<div class="ticket-ing"><span class="old">${escapeHtml(item.original)}</span></div><div class="ticket-ing"><span class="new">${escapeHtml(item.updated)}</span></div>`;
+      }
+      return `<div class="ticket-ing"><span>${escapeHtml(item.updated)}</span></div>`;
+    }).join('');
+
+    const html = `
+      <div class="ticket">
+        <div class="ticket-head">
+          <div class="tk-brand">DishMatrix &middot; Module 03</div>
+          <div class="tk-title">${escapeHtml(data.listName || 'Optimized Grocery List')}</div>
+        </div>
+        <div class="ticket-meta">
+          <span>Est. savings: ${escapeHtml(data.estimatedSavingsPct || 'n/a')}</span>
+          <span>${new Date().toLocaleDateString()}</span>
+        </div>
+        ${data.changeSummary ? `<div class="ticket-note">${escapeHtml(data.changeSummary)}</div>` : ''}
+        <div class="ticket-section-title">Your list</div>
+        ${itemsHtml}
+        <div class="ticket-foot">Estimate only &mdash; actual prices vary by store</div>
+      </div>
+    `;
+    document.getElementById('groceryWrap').innerHTML = html;
+  }
+</script>
+
+</body>
+</html>
